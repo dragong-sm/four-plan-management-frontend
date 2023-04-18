@@ -46,10 +46,32 @@ export default function LoginForm() {
         if (res.status === 200) {
           const accessToken = res.data.accessToken;
           // 세선쿠키
-          setCookie('accessToken', accessToken);
-          res.data.user.role === 'ROLE_USER'
-            ? navigate('/main', { state: res.data.user })
-            : navigate('/admin/main', { state: res.data.user });
+          setCookie('accessToken', accessToken, {
+            path: '/',
+          });
+          if (window.location.href === 'http://localhost:3000/') {
+            res.data.user.role === 'ROLE_USER' ? (
+              navigate('/main', { state: res.data.user })
+            ) : (
+              <>
+                {setError('password', {
+                  message:
+                    '관리자의 경우, 관리자 로그인 페이지를 이용해주시길 바랍니다.',
+                })}
+              </>
+            );
+          }
+          if (window.location.href === 'http://localhost:3000/admin') {
+            res.data.user.role === 'ROLE_ADMIN' ? (
+              navigate('/admin/main', { state: res.data.user })
+            ) : (
+              <>
+                {setError('password', {
+                  message: '관리자 아이디로 로그인 바랍니다.',
+                })}
+              </>
+            );
+          }
         }
       })
       .catch(e => {
